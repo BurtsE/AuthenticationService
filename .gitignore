@@ -1,0 +1,34 @@
+# Binaries for programs
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go build command
+/bin
+
+# Environment-specific files
+.env
+.DS_Store # macOS specific
+Thumbs.db # Windows specific
+
+# Dependency directories (go modules handle this now, but traditional users might still use)
+/vendor
+
+# Go workspace file
+go.work
+go.work.sum
+
+# IDE/editor-specific files (optional, can also be added to a global gitignore)
+.idea/ # IntelliJ/GoLand
+.vscode/ # VS Code (often specific settings files are ignored, not the whole directory)
+
+# logs
+logs
+
+# IDE
+.idea
