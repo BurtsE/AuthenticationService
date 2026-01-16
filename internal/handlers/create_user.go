@@ -9,20 +9,14 @@ import (
 func (u *UserHandler) CreateUser(c *gin.Context) {
 	var request dto.CreateUserRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": ErrParsingRequest.Error(),
-		})
+		createErrorResponse(c, err)
 		return
 	}
 
-	user := request.ToEntity()
-
-	err := u.service.CreateUser(c.Request.Context(), &user)
+	err := u.service.CreateUser(c.Request.Context(), request)
 	if err != nil {
-		u.log.WithError(err).WithField("user", user).Error("Error creating user")
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": ErrInternalServer.Error(),
-		})
+		u.log.WithError(err).WithField("user", request).Error("Error creating user")
+		createErrorResponse(c, err)
 		return
 	}
 

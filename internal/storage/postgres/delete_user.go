@@ -1,11 +1,11 @@
 package postgres
 
 import (
-	"AuthenticationService/internal/model"
+	"AuthenticationService/internal/domain"
 	"context"
 )
 
-func (d *DB) DeleteUser(ctx context.Context, id model.UserID) error {
+func (d *DB) DeleteUser(ctx context.Context, id domain.UserID) error {
 	query := `
 		DELETE FROM users
 		WHERE id = $1

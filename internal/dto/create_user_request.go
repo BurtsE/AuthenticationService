@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"AuthenticationService/internal/model"
+	"AuthenticationService/internal/domain"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"time"
@@ -12,9 +12,9 @@ type CreateUserRequest struct {
 	Password string `json:"password"`
 }
 
-func (r *CreateUserRequest) ToEntity() model.User {
-	user := model.User{
-		ID:            model.UserID(uuid.New()),
+func (r *CreateUserRequest) ToEntity() domain.User {
+	user := domain.User{
+		ID:            domain.UserID(uuid.New()),
 		Email:         r.Email,
 		EmailVerified: false,
 		CreatedAt:     time.Now(),

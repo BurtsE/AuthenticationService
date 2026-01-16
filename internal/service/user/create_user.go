@@ -1,12 +1,31 @@
 package user
 
 import (
-	"AuthenticationService/internal/model"
+	"AuthenticationService/internal/domain"
+	"AuthenticationService/internal/dto"
+	"AuthenticationService/internal/validation"
 	"context"
 )
 
-func (s *Service) CreateUser(ctx context.Context, User *model.User) error {
-	err := s.db.CreateUser(ctx, User)
+func (s *Service) CreateUser(ctx context.Context, request dto.CreateUserRequest) error {
+	if !validation.ValidEmail(request.Email) {
+		return domain.ErrInvalidEmail
+	}
+	if !validation.ValidPassword(request.Password) {
+		return domain.ErrWeakPassword
+	}
+
+	existingUser, err := s.db.FindByEmail(ctx, request.Email)
+	if err != nil {
+		return err
+	}
+	if existingUser != nil {
+		return domain.ErrUserAlreadyExists
+	}
+
+	user := request.ToEntity()
+
+	err = s.db.CreateUser(ctx, &user)
 	if err != nil {
 		return err
 	}

@@ -1,11 +1,13 @@
 package storage
 
 import (
-	"AuthenticationService/internal/model"
+	"AuthenticationService/internal/domain"
 	"context"
 )
 
 type UserStorage interface {
-	CreateUser(context.Context, *model.User) error
-	DeleteUser(context.Context, model.UserID) error
+	CreateUser(context.Context, *domain.User) error
+	DeleteUser(context.Context, domain.UserID) error
+	FindByID(context.Context, domain.UserID) (bool, error)
+	FindByEmail(context.Context, string) (*domain.User, error)
 }

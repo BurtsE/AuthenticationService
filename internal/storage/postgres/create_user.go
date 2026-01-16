@@ -1,11 +1,11 @@
 package postgres
 
 import (
-	"AuthenticationService/internal/model"
+	"AuthenticationService/internal/domain"
 	"context"
 )
 
-func (d *DB) CreateUser(ctx context.Context, user *model.User) error {
+func (d *DB) CreateUser(ctx context.Context, user *domain.User) error {
 	query := `
 		INSERT INTO users(id, email, password_hash, email_verified, created_at)
 		VALUES ($1, $2, $3, $4, $5)

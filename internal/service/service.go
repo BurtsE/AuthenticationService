@@ -1,11 +1,12 @@
 package service
 
 import (
-	"AuthenticationService/internal/model"
+	"AuthenticationService/internal/domain"
+	"AuthenticationService/internal/dto"
 	"context"
 )
 
 type IUserService interface {
-	CreateUser(context.Context, *model.User) error
-	DeleteUser(context.Context, model.UserID) error
+	CreateUser(context.Context, dto.CreateUserRequest) error
+	DeleteUser(context.Context, domain.UserID) error
 }
