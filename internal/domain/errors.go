@@ -8,6 +8,7 @@ var (
 	ErrInvalidEmail       = errors.New("invalid email")
 	ErrWeakPassword       = errors.New("weak password")
 	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrDatabaseConflict   = errors.New("database error")
 )
 
 // Token errors
