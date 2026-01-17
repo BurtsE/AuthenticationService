@@ -6,7 +6,7 @@ import (
 )
 
 func (d *DB) DeleteUser(ctx context.Context, id domain.UserID) error {
-	query := `
+	const query = `
 		DELETE FROM users
 		WHERE id = $1
 	`
