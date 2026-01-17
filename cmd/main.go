@@ -7,7 +7,6 @@ import (
 	"AuthenticationService/internal/service/user"
 	"AuthenticationService/internal/storage/postgres"
 	"github.com/sirupsen/logrus"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -27,13 +26,13 @@ func main() {
 	}
 	defer logFile.Close()
 
-	privateKey, err := config.LoadPrivateKeyFromEnv()
+	privateKey, err := config.ReadPrivateKey()
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
-	publicKey, err := config.LoadPublicKeyFromEnv()
+	publicKey, err := config.ReadPublicKey()
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 	tokenManager := auth.NewTokenManager(logger, privateKey, publicKey)
 
