@@ -32,9 +32,11 @@ func NewUserHandler(
 		middleware.LoggerMiddleware(log),
 		middleware.PanicHandlerMiddleware(log),
 	)
-	handler.engine.POST("/register", handler.CreateUser)
+	api := handler.engine.Group("/api/v1")
 
-	authorized := handler.engine.Group("/")
+	api.POST("/register", handler.CreateUser)
+
+	authorized := api.Group("/")
 	authorized.Use(internalMiddlware.JWTAuth(tokenManager))
 	authorized.DELETE("/", handler.DeleteUser)
 
