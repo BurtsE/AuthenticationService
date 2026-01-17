@@ -3,9 +3,9 @@ package postgres
 import (
 	"AuthenticationService/internal/domain"
 	"context"
-	"database/sql"
 	"errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v4"
 )
 
 func (d *DB) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
@@ -24,15 +24,13 @@ func (d *DB) FindByEmail(ctx context.Context, email string) (*domain.User, error
 		&user.EmailVerified,
 		&user.CreatedAt,
 	)
-	user.ID = domain.UserID(id)
-
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil
 	}
-
 	if err != nil {
 		return nil, err
 	}
+	user.ID = domain.UserID(id)
 
 	return &user, nil
 }
