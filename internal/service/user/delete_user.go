@@ -3,12 +3,13 @@ package user
 import (
 	"AuthenticationService/internal/domain"
 	"context"
+	"fmt"
 )
 
 func (s *Service) DeleteUser(ctx context.Context, id domain.UserID) error {
 	err := s.db.DeleteUser(ctx, id)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %s", domain.ErrDatabaseConflict, err)
 	}
 	return nil
 }

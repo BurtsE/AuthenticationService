@@ -5,6 +5,7 @@ import (
 	"AuthenticationService/internal/dto"
 	"AuthenticationService/internal/validation"
 	"context"
+	"fmt"
 )
 
 func (s *Service) CreateUser(ctx context.Context, request dto.CreateUserRequest) error {
@@ -17,7 +18,7 @@ func (s *Service) CreateUser(ctx context.Context, request dto.CreateUserRequest)
 
 	existingUser, err := s.db.FindByEmail(ctx, request.Email)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %s", domain.ErrDatabaseConflict, err)
 	}
 	if existingUser != nil {
 		return domain.ErrUserAlreadyExists
@@ -27,7 +28,7 @@ func (s *Service) CreateUser(ctx context.Context, request dto.CreateUserRequest)
 
 	err = s.db.CreateUser(ctx, &user)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %s", domain.ErrDatabaseConflict, err)
 	}
 	return nil
 }
