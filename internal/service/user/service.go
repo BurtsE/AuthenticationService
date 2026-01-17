@@ -7,10 +7,17 @@ import (
 
 var _ service.IUserService = (*Service)(nil)
 
+type ITokenManager interface {
+	Generate(userID string, email string) (string, error)
+}
 type Service struct {
-	db storage.UserStorage
+	db           storage.UserStorage
+	tokenManager ITokenManager
 }
 
-func NewUserService(db storage.UserStorage) *Service {
-	return &Service{db: db}
+func NewUserService(db storage.UserStorage, manager ITokenManager) *Service {
+	return &Service{
+		db:           db,
+		tokenManager: manager,
+	}
 }
