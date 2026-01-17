@@ -28,22 +28,17 @@ func NewUserHandler(
 		service: userService,
 	}
 
-	middlewares := []gin.HandlerFunc{
+	handler.engine.Use(
 		middleware.LoggerMiddleware(log),
 		middleware.PanicHandlerMiddleware(log),
-		internalMiddlware.JWTAuth(tokenManager),
-	}
+	)
+	handler.engine.POST("/register", handler.CreateUser)
 
-	handler.engine.Use(middlewares...)
-	handler.registerRoutes()
+	authorized := handler.engine.Group("/")
+	authorized.Use(internalMiddlware.JWTAuth(tokenManager))
+	authorized.DELETE("/", handler.DeleteUser)
 
 	return handler
-}
-
-func (h *UserHandler) registerRoutes() {
-	gr := h.engine.Group("/users")
-	gr.POST("/register", h.CreateUser)
-	gr.DELETE("/", h.DeleteUser)
 }
 
 func (h *UserHandler) Start() error {
