@@ -18,7 +18,7 @@ func (d *DB) FindByEmail(ctx context.Context, email string) (*domain.User, error
 	var user domain.User
 	var id uuid.UUID
 	err := d.pool.QueryRow(ctx, query, email).Scan(
-		id,
+		&id,
 		&user.Email,
 		&user.PasswordHash,
 		&user.EmailVerified,
