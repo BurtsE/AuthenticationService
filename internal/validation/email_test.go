@@ -62,6 +62,6 @@ func TestEmailVerification(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			actual := ValidEmail(tc.email)
 			assert.Equal(t, tc.expected, actual)
-		})q
+		})
 	}
 }

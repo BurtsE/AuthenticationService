@@ -27,7 +27,8 @@ func NewUserHandler(
 		engine:  gin.New(),
 		service: userService,
 	}
-
+	// handler.engine.SetTrustedProxies([]string{"127.0.0.1"})
+	//for later
 	handler.engine.Use(
 		middleware.LoggerMiddleware(log),
 		middleware.PanicHandlerMiddleware(log),
@@ -35,14 +36,20 @@ func NewUserHandler(
 	api := handler.engine.Group("/api/v1")
 
 	api.POST("/register", handler.CreateUser)
+	api.POST("/auth", handler.AuthorizeUser)
 
 	authorized := api.Group("/")
 	authorized.Use(internalMiddlware.JWTAuth(tokenManager))
-	authorized.DELETE("/", handler.DeleteUser)
+	authorized.DELETE("/users/:id", handler.DeleteUser)
 
 	return handler
 }
 
 func (h *UserHandler) Start() error {
 	return h.engine.Run(fmt.Sprintf(":%s", config.GetApplicationPort()))
+}
+
+// retrieve engine for tests
+func (h *UserHandler) Engine() *gin.Engine {
+	return h.engine
 }

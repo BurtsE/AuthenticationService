@@ -30,5 +30,6 @@ func (s *Service) CreateUser(ctx context.Context, request dto.CreateUserRequest)
 	if err != nil {
 		return fmt.Errorf("%w: %s", domain.ErrDatabaseConflict, err)
 	}
+
 	return nil
 }
