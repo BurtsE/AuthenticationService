@@ -19,12 +19,14 @@ func TestTokenFlow(t *testing.T) {
 	logger := logrus.New()
 	manager := NewTokenManager(logger, privateKey, publicKey)
 
-	token, err := manager.Generate(uuid.New().String(), "myemail@gmail.com")
+	accessToken, refreshToken, err := manager.GenerateTokenPair(uuid.New().String(), "myemail@gmail.com")
 	assert.NoError(t, err)
 
-	claims, err := manager.Validate(token)
+	claims, err := manager.Validate(accessToken)
 	assert.NoError(t, err)
 
+	claims, err = manager.Validate(refreshToken)
+	assert.NoError(t, err)
+	
 	t.Log(claims)
-
 }

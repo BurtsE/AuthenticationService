@@ -65,8 +65,22 @@ func ReadPublicKey() (*rsa.PublicKey, error) {
 
 	return rsaPub, nil
 }
-func GetTokenAccessTTL() time.Duration {
-	ttlString := getEnv("TOKEN_ACCESS_TTL", "")
+func GetAccessTokenTtl() time.Duration {
+	ttlString := getEnv("ACCESS_TOKEN_TTL", "")
+	if ttlString == "" {
+		return 0
+	}
+
+	ttl, err := time.ParseDuration(ttlString)
+	if err != nil {
+		return 0
+	}
+
+	return ttl
+}
+
+func GetRefreshTokenTtl() time.Duration {
+	ttlString := getEnv("REFRESH_TOKEN_TTL", "")
 	if ttlString == "" {
 		return 0
 	}

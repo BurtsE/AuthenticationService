@@ -8,7 +8,10 @@ import (
 	"time"
 )
 
-const defaultTokenTTL = time.Hour * 24
+const (
+	defaultRefreshTokenTTL = time.Hour * 24 * 3
+	defaultAccessTokenTtl  = time.Minute * 15
+)
 
 var (
 	ErrInvalidToken = errors.New("invalid token")
@@ -16,11 +19,12 @@ var (
 )
 
 type TokenManager struct {
-	privateKey *rsa.PrivateKey
-	publicKey  *rsa.PublicKey
-	ttl        time.Duration
-	issuer     string
-	log        *logrus.Logger
+	privateKey      *rsa.PrivateKey
+	publicKey       *rsa.PublicKey
+	accessTokenTtl  time.Duration
+	refreshTokenTtl time.Duration
+	issuer          string
+	log             *logrus.Logger
 }
 
 func NewTokenManager(
@@ -28,16 +32,22 @@ func NewTokenManager(
 	privateKey *rsa.PrivateKey,
 	publicKey *rsa.PublicKey,
 ) *TokenManager {
-	ttl := config.GetTokenAccessTTL()
+	accessTokenTtl := config.GetAccessTokenTtl()
+	refreshTokenTtl := config.GetRefreshTokenTtl()
 	issuer := config.GetTokenIssuer()
 
 	if privateKey == nil || publicKey == nil {
 		logger.Fatal("TokenManager keys missing")
 	}
 
-	if ttl == 0 {
-		ttl = defaultTokenTTL
-		logger.Warnf("TokenManager ttl is 0, set to default: %v", ttl)
+	if accessTokenTtl == 0 {
+		accessTokenTtl = defaultAccessTokenTtl
+		logger.Warnf("TokenManager access token ttl is 0, set to default: %v", accessTokenTtl)
+	}
+
+	if refreshTokenTtl == 0 {
+		refreshTokenTtl = defaultRefreshTokenTTL
+		logger.Warnf("TokenManager refresh tokne ttl is 0, set to default: %v", refreshTokenTtl)
 	}
 
 	if issuer == "" {
@@ -45,11 +55,12 @@ func NewTokenManager(
 	}
 
 	manager := &TokenManager{
-		privateKey: privateKey,
-		publicKey:  publicKey,
-		ttl:        ttl,
-		issuer:     issuer,
-		log:        logger,
+		privateKey:      privateKey,
+		publicKey:       publicKey,
+		accessTokenTtl:  accessTokenTtl,
+		refreshTokenTtl: refreshTokenTtl,
+		issuer:          issuer,
+		log:             logger,
 	}
 
 	return manager
