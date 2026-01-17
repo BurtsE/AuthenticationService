@@ -6,16 +6,17 @@ import (
 	"net/http"
 )
 
-func (u *UserHandler) CreateUser(c *gin.Context) {
+func (h *UserHandler) CreateUser(c *gin.Context) {
 	var request dto.CreateUserRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		createErrorResponse(c, err)
+		h.log.WithError(err).Error("invalid request body")
+		createErrorResponse(c, ErrInvalidRequestBody)
 		return
 	}
 
-	err := u.service.CreateUser(c.Request.Context(), request)
+	err := h.service.CreateUser(c.Request.Context(), request)
 	if err != nil {
-		u.log.WithError(err).WithField("user", request).Error("Error creating user")
+		h.log.WithError(err).WithField("user", request).Error("Error creating user")
 		createErrorResponse(c, err)
 		return
 	}

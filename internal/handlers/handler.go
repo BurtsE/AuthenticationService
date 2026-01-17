@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"AuthenticationService/internal/auth"
 	"AuthenticationService/internal/config"
+	internalMiddlware "AuthenticationService/internal/middleware"
 	"AuthenticationService/internal/service"
 	"AuthenticationService/pkg/middleware"
 	"fmt"
@@ -15,26 +17,35 @@ type UserHandler struct {
 	engine  *gin.Engine
 }
 
-func NewUserHandler(log *logrus.Logger, userService service.IUserService) *UserHandler {
-	return &UserHandler{
+func NewUserHandler(
+	log *logrus.Logger,
+	userService service.IUserService,
+	tokenManager *auth.TokenManager,
+) *UserHandler {
+	handler := &UserHandler{
 		log:     log,
 		engine:  gin.New(),
 		service: userService,
 	}
+
+	middlewares := []gin.HandlerFunc{
+		middleware.LoggerMiddleware(log),
+		middleware.PanicHandlerMiddleware(log),
+		internalMiddlware.JWTAuth(tokenManager),
+	}
+
+	handler.engine.Use(middlewares...)
+	handler.registerRoutes()
+
+	return handler
 }
 
-func (u *UserHandler) registerMiddleware() {
-	u.engine.Use(middleware.LoggerMiddleware(u.log))
-	u.engine.Use(middleware.PanicHandlerMiddleware(u.log))
-}
-func (u *UserHandler) registerRoutes() {
-	gr := u.engine.Group("/users")
-	gr.POST("/register", u.CreateUser)
-	gr.DELETE("/", u.DeleteUser)
+func (h *UserHandler) registerRoutes() {
+	gr := h.engine.Group("/users")
+	gr.POST("/register", h.CreateUser)
+	gr.DELETE("/", h.DeleteUser)
 }
 
-func (u *UserHandler) Start() error {
-	u.registerMiddleware()
-	u.registerRoutes()
-	return u.engine.Run(fmt.Sprintf(":%s", config.GetApplicationPort()))
+func (h *UserHandler) Start() error {
+	return h.engine.Run(fmt.Sprintf(":%s", config.GetApplicationPort()))
 }
