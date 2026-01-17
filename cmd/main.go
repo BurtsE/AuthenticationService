@@ -6,6 +6,10 @@ import (
 	"AuthenticationService/internal/handlers"
 	"AuthenticationService/internal/service/user"
 	"AuthenticationService/internal/storage/postgres"
+	"context"
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/log/logrusadapter"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
@@ -36,7 +40,24 @@ func main() {
 	}
 	tokenManager := auth.NewTokenManager(logger, privateKey, publicKey)
 
-	postgresDb := postgres.NewDatabase(logger)
+	// Configure PostgreSQL Database
+	cfg, err := pgxpool.ParseConfig(config.GetPostgresUrl())
+	if err != nil {
+		logger.Fatal(err)
+	}
+	cfg.ConnConfig.Logger = logrusadapter.NewLogger(logger)
+	cfg.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
+		logger.Info("connected to database")
+		return nil
+	}
+
+	pool, err := pgxpool.ConnectConfig(context.Background(), cfg)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	postgresDb := postgres.NewDatabase(logger, pool)
+
+	// Configure  service, handlers
 	service := user.NewUserService(postgresDb, tokenManager)
 	userHandler := handlers.NewUserHandler(logger, service, tokenManager)
 
