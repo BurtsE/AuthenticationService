@@ -24,5 +24,4 @@ func createErrorResponse(c *gin.Context, err error) {
 	default:
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
-	return
 }

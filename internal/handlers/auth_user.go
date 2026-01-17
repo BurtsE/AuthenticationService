@@ -23,6 +23,4 @@ func (h *UserHandler) AuthorizeUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"access_token": token,
 	})
-
-	return
 }
