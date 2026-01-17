@@ -35,6 +35,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: db
       POSTGRES_PORT: ${POSTGRES_PORT}
+      JWT_PRIVATE_KEY: /run/secrets/private_key.pem
+      JWT_PUBLIC_KEY: /run/secrets/public_key.pem
     depends_on:
       db:
         condition: service_healthy
@@ -43,6 +45,7 @@ services:
       - "8080:${APPLICATION_PORT}"
     volumes:
       - ./logs:/root/logs
+      - ./keys:/run/secrets
 
     networks:
       - internal
