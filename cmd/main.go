@@ -1,11 +1,13 @@
 package main
 
 import (
+	"AuthenticationService/internal/auth"
 	"AuthenticationService/internal/config"
 	"AuthenticationService/internal/handlers"
 	"AuthenticationService/internal/service/user"
 	"AuthenticationService/internal/storage/postgres"
 	"github.com/sirupsen/logrus"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -25,10 +27,19 @@ func main() {
 	}
 	defer logFile.Close()
 
-	// Init resources
+	privateKey, err := config.LoadPrivateKeyFromEnv()
+	if err != nil {
+		log.Fatal(err)
+	}
+	publicKey, err := config.LoadPublicKeyFromEnv()
+	if err != nil {
+		log.Fatal(err)
+	}
+	tokenManager := auth.NewTokenManager(logger, privateKey, publicKey)
+
 	postgresDb := postgres.NewDatabase(logger)
-	service := user.NewUserService(postgresDb)
-	userHandler := handlers.NewUserHandler(logger, service)
+	service := user.NewUserService(postgresDb, tokenManager)
+	userHandler := handlers.NewUserHandler(logger, service, tokenManager)
 
 	// Channel for kill signal
 	sigchan := make(chan os.Signal, 1)
