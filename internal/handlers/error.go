@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"AuthenticationService/internal/auth"
 	"AuthenticationService/internal/domain"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,10 @@ func createErrorResponse(c *gin.Context, err error) {
 	case errors.Is(err, ErrInvalidRequestBody):
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	case errors.Is(err, domain.ErrInvalidEmail):
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	case errors.Is(err, auth.ErrExpiredToken):
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	case errors.Is(err, auth.ErrInvalidToken):
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	case errors.Is(err, domain.ErrWeakPassword):
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

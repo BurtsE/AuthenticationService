@@ -11,10 +11,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	refreshTokenCookieName = "refreshToken"
+)
+
+var cookieMaxAge = int(config.GetRefreshTokenTtl().Seconds())
+
 type UserHandler struct {
-	service service.IUserService
-	log     *logrus.Logger
-	engine  *gin.Engine
+	service      service.IUserService
+	log          *logrus.Logger
+	engine       *gin.Engine
+	tokenManager *auth.TokenManager
 }
 
 func NewUserHandler(
@@ -23,24 +30,31 @@ func NewUserHandler(
 	tokenManager *auth.TokenManager,
 ) *UserHandler {
 	handler := &UserHandler{
-		log:     log,
-		engine:  gin.New(),
-		service: userService,
+		log:          log,
+		engine:       gin.New(),
+		service:      userService,
+		tokenManager: tokenManager,
 	}
+
 	// handler.engine.SetTrustedProxies([]string{"127.0.0.1"})
 	//for later
+
+	// Global middlewares
 	handler.engine.Use(
 		middleware.LoggerMiddleware(log),
 		middleware.PanicHandlerMiddleware(log),
 	)
-	api := handler.engine.Group("/api/v1")
 
-	api.POST("/register", handler.CreateUser)
-	api.POST("/auth", handler.AuthorizeUser)
+	authRoutes := handler.engine.Group("/api/v1/auth")
 
-	authorized := api.Group("/")
-	authorized.Use(internalMiddlware.JWTAuth(tokenManager))
-	authorized.DELETE("/users/:id", handler.DeleteUser)
+	authRoutes.POST("/register", handler.CreateUser)
+	authRoutes.POST("/login", handler.AuthorizeUser)
+	authRoutes.POST("/refresh-token", handler.RefreshToken)
+
+	userRoutes := handler.engine.Group("/api/v1/users")
+
+	userRoutes.Use(internalMiddlware.JWTAuth(tokenManager))
+	userRoutes.DELETE("/:id", handler.DeleteUser)
 
 	return handler
 }

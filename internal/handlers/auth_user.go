@@ -14,13 +14,17 @@ func (h *UserHandler) AuthorizeUser(c *gin.Context) {
 		return
 	}
 
-	token, err := h.service.AuthorizeUser(c.Request.Context(), request)
+	accessToken, refreshToken, err := h.service.AuthorizeUser(c.Request.Context(), request)
 	if err != nil {
-		h.log.WithError(err).Error("invalid request body")
+		h.log.WithError(err).WithField("user", request).Error("error authorizing user")
 		createErrorResponse(c, err)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"access_token": token,
+	c.SetCookie(refreshTokenCookieName, refreshToken, cookieMaxAge, "/", "", false, true)
+
+	c.JSON(http.StatusOK, dto.TokenPairResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	})
 }
