@@ -2,13 +2,15 @@ package auth
 
 import (
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"time"
 )
 
 func (m *TokenManager) GenerateTokenPair(userID string, email string) (string, string, error) {
 	now := time.Now()
-
+	id := uuid.New().String()
 	accessTokenClaims := &Claims{
+		ID:     id,
 		UserID: userID,
 		Email:  email,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -19,6 +21,7 @@ func (m *TokenManager) GenerateTokenPair(userID string, email string) (string, s
 	}
 
 	refreshTokenClaims := &Claims{
+		ID:     id.String(),
 		UserID: userID,
 		Email:  email,
 		RegisteredClaims: jwt.RegisteredClaims{
