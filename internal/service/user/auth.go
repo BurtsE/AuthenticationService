@@ -7,19 +7,19 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *Service) AuthorizeUser(ctx context.Context, dto dto.AuthorizeUserRequest) (string, error) {
+func (s *Service) AuthorizeUser(ctx context.Context, dto dto.AuthorizeUserRequest) (string, string, error) {
 	user, err := s.db.FindByEmail(ctx, dto.Email)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	if user == nil {
-		return "", domain.ErrInvalidCredentials
+		return "", "", domain.ErrInvalidCredentials
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(dto.Password)); err != nil {
-		return "", domain.ErrInvalidCredentials
+		return "", "", domain.ErrInvalidCredentials
 	}
 
-	return s.tokenManager.Generate(user.ID.String(), user.Email)
+	return s.tokenManager.GenerateTokenPair(user.ID.String(), user.Email)
 }

@@ -8,7 +8,7 @@ import (
 var _ service.IUserService = (*Service)(nil)
 
 type ITokenManager interface {
-	Generate(userID string, email string) (string, error)
+	GenerateTokenPair(userID string, email string) (string, string, error)
 }
 type Service struct {
 	db           storage.UserStorage
