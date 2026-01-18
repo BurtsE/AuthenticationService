@@ -21,7 +21,7 @@ func (m *TokenManager) GenerateTokenPair(userID string, email string) (string, s
 	}
 
 	refreshTokenClaims := &Claims{
-		ID:     id.String(),
+		ID:     id,
 		UserID: userID,
 		Email:  email,
 		RegisteredClaims: jwt.RegisteredClaims{
