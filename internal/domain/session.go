@@ -5,14 +5,14 @@ import (
 	"time"
 )
 
-var SessionDuration time.Duration = config.GetSessionDuration()
+var SessionDuration = config.GetSessionDuration()
 
 type Session struct {
-	UserID         UserID
-	RefreshTokenID string
-	Fingerprint    string
-	ExpiresAt      time.Time
-	CreatedAt      time.Time
+	UserID         UserID    `redis:"user_id"`
+	RefreshTokenID string    `redis:"refresh_token_id"`
+	Fingerprint    string    `redis:"fingerprint"`
+	ExpiresAt      time.Time `redis:"expires_at"`
+	CreatedAt      time.Time `json:"created_at"`
 }
 
 func (s *Session) IsExpired() bool {
