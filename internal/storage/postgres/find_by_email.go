@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-func (d *DB) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
+func (d *UserStorage) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
 	const query = `
 		SELECT id, email, password_hash, email_verified, created_at
 		FROM users

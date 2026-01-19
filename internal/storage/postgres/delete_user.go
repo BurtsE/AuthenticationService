@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-func (d *DB) DeleteUser(ctx context.Context, id domain.UserID) error {
+func (d *UserStorage) DeleteUser(ctx context.Context, id domain.UserID) error {
 	const query = `
 		DELETE FROM users
 		WHERE id = $1

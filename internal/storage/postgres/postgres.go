@@ -6,9 +6,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var _ storage.UserStorage = (*DB)(nil)
+var _ storage.UserStorage = (*UserStorage)(nil)
 
-type DB struct {
+type UserStorage struct {
 	log  *logrus.Logger
 	pool *pgxpool.Pool
 }
@@ -16,13 +16,13 @@ type DB struct {
 func NewDatabase(
 	logger *logrus.Logger,
 	pool *pgxpool.Pool,
-) *DB {
-	return &DB{
+) *UserStorage {
+	return &UserStorage{
 		pool: pool,
 		log:  logger,
 	}
 }
 
-func (d *DB) Close() {
+func (d *UserStorage) Close() {
 	d.pool.Close()
 }

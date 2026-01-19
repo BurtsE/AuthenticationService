@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-func (d *DB) CreateUser(ctx context.Context, user *domain.User) error {
+func (d *UserStorage) CreateUser(ctx context.Context, user *domain.User) error {
 	const query = `
 		INSERT INTO users(id, email, password_hash, email_verified, created_at)
 		VALUES ($1, $2, $3, $4, $5)
