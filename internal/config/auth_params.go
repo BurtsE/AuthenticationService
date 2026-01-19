@@ -79,8 +79,8 @@ func GetAccessTokenTtl() time.Duration {
 	return ttl
 }
 
-func GetRefreshTokenTtl() time.Duration {
-	ttlString := getEnv("REFRESH_TOKEN_TTL", "")
+func GetSessionDuration() time.Duration {
+	ttlString := getEnv("SESSION_DURATION", "")
 	if ttlString == "" {
 		return 0
 	}
