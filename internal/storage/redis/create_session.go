@@ -11,17 +11,8 @@ func (s *SessionStorage) CreateSession(ctx context.Context, session *domain.Sess
 	sessionKey := sessionKeyPrefix + session.RefreshTokenID
 	userKey := userKeyPrefix + uuid.UUID(session.UserID).String()
 
-	//values := map[string]interface{}{
-	//	"user_id":          uuid.UUID(session.UserID).String(),
-	//	"refresh_token_id": session.RefreshTokenID,
-	//	"fingerprint":      session.Fingerprint,
-	//	"expires_at":       session.ExpiresAt.Unix(),
-	//	"created_at":       session.CreatedAt.Unix(),
-	//}
-
 	pipe := s.rdb.TxPipeline()
 
-	//pipe.HSet(ctx, sessionKey, values)
 	pipe.HSet(ctx, sessionKey, *session)
 
 	ttl := time.Until(session.ExpiresAt)
