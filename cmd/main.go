@@ -6,10 +6,12 @@ import (
 	"AuthenticationService/internal/handlers"
 	"AuthenticationService/internal/service/user"
 	"AuthenticationService/internal/storage/postgres"
+	redisInternal "AuthenticationService/internal/storage/redis"
 	"context"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/log/logrusadapter"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
@@ -57,8 +59,19 @@ func main() {
 	}
 	postgresDb := postgres.NewDatabase(logger, pool)
 
+	//configure redis storage
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     config.GetRedisUrl(),
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+	if err = rdb.Ping(context.Background()).Err(); err != nil {
+		logger.Fatal(err)
+	}
+	sessionStorage := redisInternal.NewSessionStorage(rdb)
+
 	// Configure  service, handlers
-	service := user.NewUserService(postgresDb, tokenManager)
+	service := user.NewUserService(postgresDb, sessionStorage, tokenManager)
 	userHandler := handlers.NewUserHandler(logger, service, tokenManager)
 
 	// Channel for kill signal
@@ -76,6 +89,7 @@ func main() {
 	// Clearing resources
 	logger.Info("Closing database connections")
 	postgresDb.Close()
+	_ = sessionStorage.Close()
 
 	logger.Info("Shutting down...")
 
