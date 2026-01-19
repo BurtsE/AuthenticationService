@@ -7,7 +7,7 @@ import (
 )
 
 func (s *Service) DeleteUser(ctx context.Context, id domain.UserID) error {
-	err := s.db.DeleteUser(ctx, id)
+	err := s.userStorage.DeleteUser(ctx, id)
 	if err != nil {
 		return fmt.Errorf("%w: %s", domain.ErrDatabaseConflict, err)
 	}

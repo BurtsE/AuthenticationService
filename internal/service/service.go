@@ -9,6 +9,7 @@ import (
 type IUserService interface {
 	CreateUser(context.Context, dto.CreateUserRequest) error
 	DeleteUser(context.Context, domain.UserID) error
-	AuthorizeUser(context.Context, dto.AuthorizeUserRequest) (string, string, error)
-	RefreshToken(context.Context, dto.RefreshTokenRequest) (string, string, error)
+
+	AuthenticateUser(ctx context.Context, dto dto.AuthorizeUserRequest, fingerprint string) (string, string, error)
+	RefreshToken(ctx context.Context, refreshToken, fingerprint string) (string, string, error)
 }

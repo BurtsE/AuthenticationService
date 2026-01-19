@@ -16,7 +16,7 @@ func (s *Service) CreateUser(ctx context.Context, request dto.CreateUserRequest)
 		return domain.ErrWeakPassword
 	}
 
-	existingUser, err := s.db.FindByEmail(ctx, request.Email)
+	existingUser, err := s.userStorage.FindByEmail(ctx, request.Email)
 	if err != nil {
 		return fmt.Errorf("%w: %s", domain.ErrDatabaseConflict, err)
 	}
@@ -26,7 +26,7 @@ func (s *Service) CreateUser(ctx context.Context, request dto.CreateUserRequest)
 
 	user := request.ToEntity()
 
-	err = s.db.CreateUser(ctx, &user)
+	err = s.userStorage.CreateUser(ctx, &user)
 	if err != nil {
 		return fmt.Errorf("%w: %s", domain.ErrDatabaseConflict, err)
 	}
