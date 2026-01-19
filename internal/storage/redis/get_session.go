@@ -47,6 +47,12 @@ func (s *SessionStorage) GetSessionByTokenID(ctx context.Context, tokenID uuid.U
 }
 
 func (s *SessionStorage) UserSessionsCount(ctx context.Context, id domain.UserID) (int, error) {
-	//TODO implement me
-	panic("implement me")
+	key := userKeyPrefix + id.String()
+
+	refreshTokenIDs, err := s.rdb.SMembers(ctx, key).Result()
+	if err != nil {
+		return -1, err
+	}
+
+	return len(refreshTokenIDs), nil
 }
