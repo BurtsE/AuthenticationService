@@ -4,11 +4,13 @@ import "errors"
 
 // Service errors
 var (
-	ErrUserAlreadyExists  = errors.New("user already exists")
-	ErrInvalidEmail       = errors.New("invalid email")
-	ErrWeakPassword       = errors.New("weak password")
-	ErrInvalidCredentials = errors.New("invalid credentials")
-	ErrDatabaseConflict   = errors.New("database error")
+	ErrUserAlreadyExists     = errors.New("user already exists")
+	ErrEntityNotFound        = errors.New("entity not found")
+	ErrInvalidEmail          = errors.New("invalid email")
+	ErrWeakPassword          = errors.New("weak password")
+	ErrInvalidCredentials    = errors.New("invalid credentials")
+	ErrInvalidRefreshSession = errors.New("invalid refresh session")
+	ErrDatabaseConflict      = errors.New("database error")
 )
 
 // Token errors

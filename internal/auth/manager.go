@@ -33,7 +33,7 @@ func NewTokenManager(
 	publicKey *rsa.PublicKey,
 ) *TokenManager {
 	accessTokenTtl := config.GetAccessTokenTtl()
-	refreshTokenTtl := config.GetRefreshTokenTtl()
+	refreshTokenTtl := config.GetSessionDuration()
 	issuer := config.GetTokenIssuer()
 
 	if privateKey == nil || publicKey == nil {
@@ -47,7 +47,7 @@ func NewTokenManager(
 
 	if refreshTokenTtl == 0 {
 		refreshTokenTtl = defaultRefreshTokenTTL
-		logger.Warnf("TokenManager refresh tokne ttl is 0, set to default: %v", refreshTokenTtl)
+		logger.Warnf("TokenManager refresh token ttl is 0, set to default: %v", refreshTokenTtl)
 	}
 
 	if issuer == "" {
