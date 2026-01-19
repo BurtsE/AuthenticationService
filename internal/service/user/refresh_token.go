@@ -44,9 +44,11 @@ func (s *Service) RefreshToken(
 		return "", "", fmt.Errorf("%w: %s", domain.ErrDatabaseConflict, err)
 	}
 
-	if session.Fingerprint != fingerprint || session.IsExpired() {
-		return "", "", fmt.Errorf("%w: %s: %v; %s;%s", domain.ErrInvalidRefreshSession,
-			"session is expired", session.IsExpired(), session.Fingerprint, fingerprint)
+	if session.IsExpired() {
+		return "", "", domain.ErrExpiredToken
+	}
+	if session.Fingerprint != fingerprint {
+		return "", "", domain.ErrInvalidRefreshSession
 	}
 
 	accessToken, refreshToken, err := s.tokenManager.GenerateTokenPair(user.ID.String(), user.Email)
