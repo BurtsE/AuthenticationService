@@ -27,10 +27,10 @@ go.work.sum
 .idea/ # IntelliJ/GoLand
 .vscode/ # VS Code (often specific settings files are ignored, not the whole directory)
 
-# logs
-logs
-
 # IDE
 .idea
 
+# Application data folders
 keys
+redis_data
+logs
