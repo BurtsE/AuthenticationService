@@ -7,8 +7,8 @@ import (
 )
 
 func (s *SessionStorage) DeleteSession(ctx context.Context, session *domain.Session) error {
-	sessionKey := "session:" + session.RefreshTokenID
-	userKey := "user_sessions:" + uuid.UUID(session.UserID).String()
+	sessionKey := sessionKeyPrefix + session.RefreshTokenID
+	userKey := userKeyPrefix + uuid.UUID(session.UserID).String()
 
 	pipe := s.rdb.TxPipeline()
 	pipe.Del(ctx, sessionKey)
