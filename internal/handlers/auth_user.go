@@ -14,7 +14,7 @@ func (h *UserHandler) AuthorizeUser(c *gin.Context) {
 		return
 	}
 
-	accessToken, refreshToken, err := h.service.AuthorizeUser(c.Request.Context(), request)
+	accessToken, refreshToken, err := h.service.AuthenticateUser(c.Request.Context(), request, getClientFingerprint(c))
 	if err != nil {
 		h.log.WithError(err).WithField("user", request).Error("error authorizing user")
 		createErrorResponse(c, err)

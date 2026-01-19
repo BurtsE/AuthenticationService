@@ -13,19 +13,14 @@ func (h *UserHandler) RefreshToken(c *gin.Context) {
 		createErrorResponse(c, ErrInvalidRequestBody)
 		return
 	}
-	var request dto.RefreshTokenRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
-		h.log.WithError(err).Error("Invalid refresh token request")
-		createErrorResponse(c, ErrInvalidRequestBody)
-		return
-	}
 
-	accessToken, refreshToken, err := h.service.RefreshToken(c.Request.Context(), request)
+	accessToken, refreshToken, err := h.service.RefreshToken(c.Request.Context(), refreshToken, getClientFingerprint(c))
 	if err != nil {
-		h.log.WithError(err).WithField("fingerprint", request).Error("Error refreshing token")
+		h.log.WithError(err).WithField("token", refreshToken).Error("Error refreshing token")
 		createErrorResponse(c, err)
 		return
 	}
+
 	c.JSON(http.StatusOK, dto.TokenPairResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,

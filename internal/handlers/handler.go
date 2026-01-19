@@ -15,7 +15,7 @@ const (
 	refreshTokenCookieName = "refreshToken"
 )
 
-var cookieMaxAge = int(config.GetRefreshTokenTtl().Seconds())
+var cookieMaxAge = int(config.GetSessionDuration().Seconds())
 
 type UserHandler struct {
 	service      service.IUserService
